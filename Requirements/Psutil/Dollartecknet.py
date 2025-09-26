@@ -1,0 +1,33 @@
+Dont forget to... Psutil.
+
+import psutil
+print(psutil.cpu_percent())
+print(psutil.virtual_memory().percent)
+print(psutil.disk_usage('/').percent)
+print(psutil.net_io_counters().bytes_sent + psutil.net_io_counters().bytes_recv)
+print(psutil.sensors_battery().percent)
+print(psutil.sensors_battery().secsleft)
+print(psutil.sensors_battery().power_plugged)
+print(psutil.users())
+print(psutil.pids())
+print(psutil.Process().memory_info().rss)
+print(psutil.Process().memory_info().vms)
+print(psutil.Process().cpu_percent())
+print(psutil.Process().create_time())
+print(psutil.Process().exe())
+print(psutil.Process().cwd())
+print(psutil.Process().cmdline())
+print(psutil.Process().num_threads())
+print(psutil.Process().threads())
+print(psutil.Process().open_files())
+print(psutil.Process().connections())
+print(psutil.Process().num_fds())
+print(psutil.Process().num_ctx_switches())
+print(psutil.Process().ionice())
+print(psutil.Process().rlimit(psutil.RLIMIT_NOFILE))
+print(psutil.Process().environ())
+print(psutil.Process().gids())
+print(psutil.Process().uids())
+print(psutil.Process().terminal())
+
+Now ask why did i do this...
