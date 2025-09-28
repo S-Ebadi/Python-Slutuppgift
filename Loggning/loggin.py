@@ -1,1 +1,0 @@
-This is space reserved for Notion and all logging.
