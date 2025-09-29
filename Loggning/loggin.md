@@ -1,4 +1,4 @@
-# DevOps logg – Slutuppgift (Systemmonitor i Python)
+# Slutuppgift (Systemmonitor i Python) - Logg
 
 Syfte: Dokumentera dagliga aktiviteter, tekniska beslut och lärdomar under arbetet med slutuppgiften.  
 Period: 22 september – pågående
