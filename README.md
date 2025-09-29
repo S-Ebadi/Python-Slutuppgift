@@ -89,6 +89,21 @@ Följ instruktionerna i konsolen för att navigera mellan alternativen. Alla inm
 
 ---
 
+## Reflektion och lärdomar
+
+Under arbetet med denna slutuppgift har jag lärt mig:
+
+- Hur man strukturerar ett större Python-projekt med flera moduler och klasser.
+- Versionshantering med git och vikten av tydlig projektstruktur.
+- Hur man använder externa bibliotek som psutil för att läsa systemresurser.
+- Betydelsen av loggning, både för utvecklingsprocessen och för själva applikationen.
+- Att validera användarinput och hantera fel på ett robust sätt.
+- Hur man iterativt förbättrar kod och dokumentation utifrån logg och feedback.
+
+Min progression och faktiska kunskapsnivå framgår tydligt av loggfilen (`Loggning(Delavstämning)/loggin.md`). Där dokumenteras dag för dag vad som genomförts, vilka problem som uppstått och hur de lösts. Klassförklaringar på enkel nivå finns i `klassforklaring.md`.
+
+---
+
 > "No man has the right to be an amateur in the matter of physical training. It is a shame for a man to grow old without seeing the beauty and strength of which his body is capable."
 
 — Sokrates
