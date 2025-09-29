@@ -4,7 +4,7 @@ from typing import Callable
 from alarms import AlarmRegistry, AlarmType
 from logger import log_event
 from monitor import read_cpu_percent, read_memory, read_disk
-from utils import ask_int_in_range, press_enter_to_continue, format_bytes, nonblocking_enter_loop
+from Requirements.utils import ask_int_in_range, press_enter_to_continue, format_bytes, nonblocking_enter_loop
 
 
 def print_header():
