@@ -1,3 +1,7 @@
+# Observera
+
+Detta README och projektstruktur beskriver det tänkta slutmålet för systemmonitor-applikationen. Nuvarande implementation och faktisk kunskapsnivå framgår av loggfilen som förs under utvecklingen. Funktionalitet, struktur och kodstil är under pågående arbete och uppdateras löpande. Originalplanen och nuvarande utseende bibehålls, men utgå från loggfilen för att se vad som faktiskt är genomfört och vilka insikter som vunnits hittills.
+
 
 # Systemmonitor
 

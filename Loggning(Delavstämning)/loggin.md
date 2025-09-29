@@ -68,7 +68,7 @@ Period: 22 september – pågående
 
 ---
 
-## Nästa steg
+## Nästa steg - 30 september
 - Implementera färdigt larmflöde för minne och disk.
 - Bygga färdiga klasser enligt OOP-principer.
 - Lägga till testfall och förbereda slutgiltig dokumentation.
