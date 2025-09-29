@@ -74,9 +74,9 @@ Period: 22 september – pågående
 ## 29 september
 - Gått igenom och dubbelkollat all kodstruktur och dokumentation för att säkerställa att allt hänger ihop logiskt.
 - Skapat README-filer för samtliga mappar för att tydliggöra syfte och ansvar i varje del av projektet.
-- Reflekterat över vikten av att förstå syftet med varje klass och funktion innan implementation – märker att det ger färre buggar och bättre kod.
+- Reflekterat över vikten av att förstå syftet med varje klass och funktion innan implementation märker att det ger färre buggar och bättre kod.
 - Läst på mer om loggning och best practices för dokumentation, och försökt applicera det i projektet.
-- Upptäckt att det är lätt att missa detaljer om man stressar – har därför börjat arbeta mer metodiskt och stämmer av mot krav och tidigare loggar.
+- Upptäckt att det är lätt att missa detaljer om man stressar och har därför börjat arbeta mer metodiskt och stämmer av mot krav och tidigare loggar.
 
 **Lärdomar:**
 - Min förståelse för helheten har ökat, men jag inser också att det krävs fortsatt noggrannhet och att jag behöver dubbelkolla både teori och praktik.
