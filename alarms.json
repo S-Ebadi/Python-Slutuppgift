@@ -1,0 +1,14 @@
+[
+  {
+    "type": "CPU",
+    "threshold": 60
+  },
+  {
+    "type": "DISK",
+    "threshold": 67
+  },
+  {
+    "type": "MINNE",
+    "threshold": 50
+  }
+]

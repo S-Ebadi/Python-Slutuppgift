@@ -1,2 +1,2 @@
 
-psutil
+psutil==7.1.0
