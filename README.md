@@ -1,7 +1,7 @@
 
 # Slutuppgift
 
-Syftet med slutuppgiften är att bygga ett enkelt men komplett Python-program som övervakar datorns resurser (CPU, minne, disk) och larmar när fördefinierade gränser överskrids. Lösningen ska vara robust, användarvänlig och visa grundläggande förståelse för modulär programmering, filhantering och systemintegration.
+Syftet med slutuppgiften är att bygga ett enkelt men komplett Python program som övervakar datorns resurser (CPU, minne, disk) och larmar när fördefinierade gränser överskrids. Lösningen ska vara robust, användarvänlig och visa grundläggande förståelse för modulär programmering, filhantering och systemintegration.
 
 ## Min lösning: Systemmonitor
 
@@ -61,9 +61,7 @@ Följ instruktionerna i konsolen. Alla inmatningar kontrolleras och fel hanteras
 - Larm sparas i `alarms.json` och laddas automatiskt.
 - Du kan skapa och ta bort larm via menyn.
 
-### Reflektion
-
-Som ny student har jag lärt mig:
+### Reflektion kring utmaningar och genombrott
 
 - Hur man delar upp kod i moduler och hanterar filimporter.
 - Hur man använder externa bibliotek (psutil) för systeminfo.
