@@ -43,7 +43,6 @@ def start_overvakning():
                 msg = f"LARM: {metric.upper()} över {alarm['threshold']}%"
                 print(f"\n*** {msg} ***")
                 logger.log(msg)
-                utils.beep(1, 0.2)
 
         session_log.append({
             "cpu": cpu,
