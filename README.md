@@ -1,10 +1,9 @@
 
 # Systemmonitor
 
-> **En avancerad systemmonitor i Python som övervakar CPU, RAM och disk med realtids2. **Larmkontroll**: Automatisk evaluering av alla konfigurerade larm
-3. **Visuell indikation**: Larmmeddelanden visas direkt i terminalen
-4. **Loggning**: Varje mätpunkt sparas i session_log med tidsstämpelrm.**  
-> *Slutuppgift i kursen Systemutveckling i Python (DevOps-utbildning).*
+**Håll koll på din dators prestanda i realtid.**
+
+Ett enkelt Python-program som övervakar CPU, minne och disk. Skapa larm, få notifieringar när något går fel, och spara allt för senare analys.
 
 *Forza Inter 🖤💙*
 
@@ -12,9 +11,9 @@
 
 ---
 
-## Projektbeskrivning
+## Vad gör programmet?
 
-Systemmonitor är ett komplett övervakningsverktyg som kontinuerligt analyserar systemresurser med hjälp av **psutil**. Programmet erbjuder realtidsövervakning, intelligent larmhantering och detaljerad sessionsloggning.
+Systemmonitor visar live-data från din dator och varnar dig när resurser börjar ta slut. Perfekt för att förstå systembelastning eller testa prestanda under olika förhållanden.
 
 ### Huvudfunktioner
 
