@@ -44,13 +44,3 @@ def clr_line():
     sys.stdout.write(" " * 120)
     sys.stdout.write("\r")
     sys.stdout.flush()
-
-def beep(times=1, interval=0.1):
-    """Beep-ljud i terminalen (kan användas vid larm)."""
-    try:
-        for _ in range(times):
-            sys.stdout.write("\a")
-            sys.stdout.flush()
-            time.sleep(interval)
-    except:
-        pass

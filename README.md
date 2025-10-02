@@ -46,7 +46,7 @@ systemmonitor/
 ├── main.py        # Huvudprogram, meny och styrning
 ├── monitor.py     # Resursmätning via psutil (read_cpu, read_memory, read_disk)
 ├── alarms.py      # AlarmStore-klass för CRUD och persistens
-├── utils.py       # Hjälpfunktioner (t.ex. press, beep, validering)
+├── utils.py       # Hjälpfunktioner (t.ex. press, validering, UI)
 ├── logger.py      # Loggar händelser till tidsstämplade loggfiler
 └── Storage/       # Datafiler (alarms.json, log-*.txt, session-*.json)
 ```
@@ -96,7 +96,6 @@ Verktygsmodul med användbara funktioner:
 - **Datakonvertering**: `gb(bytes)` - Konverterar bytes till GB
 - **Användarinteraktion**: `press()`, `choice()`, `fnum()` för input
 - **Visuella effekter**: `spinner()`, `led()`, `clr_line()` för UI
-- **Ljudsignaler**: `beep(times, interval)` - Implementerad men ej använd i denna slutuppgift
 
 ---
 
@@ -108,8 +107,7 @@ När övervakning aktiveras sker följande:
 1. **Threading**: Separata trådar för användarinput och mätningar
 2. **Live Display**: Kontinuerlig uppdatering av systemstatus i terminalen
 3. **Larmkontroll**: Automatisk evaluering av alla konfigurerade larm
-4. **Ljudsignal**: `utils.beep()` aktiveras vid larmtrigger
-5. **Loggning**: Varje mätpunkt sparas i session_log med tidsstämpel
+4. **Loggning**: Varje mätpunkt sparas i session_log med tidsstämpel
 
 ### JSON-baserad Lagring
 
@@ -272,7 +270,7 @@ I början kändes mängden överväldigande, men genom att bryta ned allt i modu
 - **Enkelhet** (refaktorera men bevara funktion)  
 - **Helhetstänk** (DevOps handlar om både kod och processer)
 
-Jag har även tagit höjd för funktioner (t.ex. ljud via utils) utan att fullt ut implementera dem, som ett sätt att visa förståelse för hur det kan byggas vidare.
+Genom att dela upp funktionaliteten i separata moduler blev koden mer överskådlig och lättare att underhålla.
 
 ---
 
