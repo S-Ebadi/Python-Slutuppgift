@@ -200,7 +200,7 @@ Programmet erbjuder en intuitiv meny med följande alternativ:
 
 <div align="center">
 
-# 🚀 **UTVECKLAT MED DevOps** ❤️ 
+   **DevOps** ❤️ 
 
 ### *Passion för automatisering, övervakning och kontinuerlig förbättring*
 
@@ -208,7 +208,6 @@ Programmet erbjuder en intuitiv meny med följande alternativ:
 **│          Made with 💜 for DevOps       │**  
 **└────────────────────────────────────────┘**
 
-*Bidrag och förbättringsförslag välkomnas alltid!*
 
 </div>
 
