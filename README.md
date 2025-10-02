@@ -198,16 +198,17 @@ Programmet erbjuder en intuitiv meny med följande alternativ:
 
 ---
 
-## Licens
-
-Detta projekt är utvecklat som del av en utbildningsuppgift. 
-
----
-
 <div align="center">
 
-**DevOps ❤️ **
+# 🚀 **UTVECKLAT MED DevOps** ❤️ 
 
+### *Passion för automatisering, övervakning och kontinuerlig förbättring*
+
+**┌────────────────────────────────────────┐**  
+**│          Made with 💜 for DevOps       │**  
+**└────────────────────────────────────────┘**
+
+*Bidrag och förbättringsförslag välkomnas alltid!*
 
 </div>
 
