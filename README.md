@@ -197,17 +197,3 @@ Programmet erbjuder en intuitiv meny med följande alternativ:
 - Starta kontinuerlig övervakning
 
 ---
-
-<div align="center">
-
-   **DevOps** ❤️ 
-
-### *Passion för automatisering, övervakning och kontinuerlig förbättring*
-
-**┌────────────────────────────────────────┐**  
-**│          Made with 💜 for DevOps       │**  
-**└────────────────────────────────────────┘**
-
-
-</div>
-

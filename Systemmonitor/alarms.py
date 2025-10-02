@@ -1,46 +1,50 @@
-import json, uuid
-from pathlib import Path
+import os, json, uuid
 
-FILE = Path("alarms.json")
+# Skapa Storage-mapp om den inte finns
+STORAGE_DIR = os.path.join(os.path.dirname(__file__), "Storage")
+os.makedirs(STORAGE_DIR, exist_ok=True)
 
-def _load():
-    if not FILE.exists(): return []
-    try: return json.loads(FILE.read_text(encoding="utf-8"))
-    except: return []
+ALARMS_FILE = os.path.join(STORAGE_DIR, "alarms.json")
 
-def _save(items): FILE.write_text(json.dumps(items, indent=2), encoding="utf-8")
+def load():
+    if not os.path.exists(ALARMS_FILE):
+        return []
+    try:
+        with open(ALARMS_FILE, "r") as f:
+            return json.load(f)
+    except:
+        return []
 
-def list_all(): return _load()
+def save(alarms):
+    with open(ALARMS_FILE, "w") as f:
+        json.dump(alarms, f, indent=2)
 
-def create(metric, threshold, direction, description=""):
-    items = _load()
-    a = {"id": str(uuid.uuid4()), "metric": metric, "threshold": float(threshold),
-         "direction": direction, "description": description}
-    items.append(a); _save(items); return a
+def list_all():
+    return load()
 
-def get(aid):
-    return next((a for a in _load() if a["id"] == aid), None)
+def create(metric, threshold, direction):
+    alarms = load()
+    a = {"id": str(uuid.uuid4()), "metric": metric, "threshold": threshold, "direction": direction}
+    alarms.append(a)
+    save(alarms)
+    return a
 
-def update(aid, **fields):
-    items = _load()
-    for a in items:
-        if a["id"] == aid:
-            a.update({k:v for k,v in fields.items() if v is not None})
-            _save(items); return True
-    return False
+def update(id, **kwargs):
+    alarms = load()
+    for a in alarms:
+        if a["id"] == id:
+            a.update(kwargs)
+    save(alarms)
 
-def delete(aid):
-    items = _load()
-    n = len(items)
-    items = [a for a in items if a["id"] != aid]
-    if len(items) != n: _save(items); return True
-    return False
+def delete(id):
+    alarms = [a for a in load() if a["id"] != id]
+    save(alarms)
 
-def evaluate(cpu_pct, mem_pct, disk_pct):
+def evaluate(cpu, mem, disk):
+    """Returnerar lista av larm som har triggats"""
     hits = []
-    val = {"cpu": cpu_pct, "memory": mem_pct, "disk": disk_pct}
-    for a in _load():
-        x = val[a["metric"]]
-        if (a["direction"] == ">=" and x >= a["threshold"]) or (a["direction"] == "<=" and x <= a["threshold"]):
+    for a in load():
+        val = cpu if a["metric"]=="cpu" else mem if a["metric"]=="memory" else disk
+        if a["direction"] == ">=" and val >= a["threshold"]:
             hits.append(a)
     return hits
