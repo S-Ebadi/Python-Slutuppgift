@@ -1,14 +1,21 @@
 
 # Systemmonitor
 
-> **En systemmonitor i Python som öve### Huvudmeny (main.py)
-Programmet erbjuder en enkel 4-punktsmeny:
+**Slutuppgift - Systemmonitor**
 
-1. **Starta övervakning** - Kontinuerlig realtidsövervakning, avslutas med Ctrl+C
-2. **Visa senaste status** - Visar sista mätning från tidigare session
-3. **Hantera larm** - Undermeny för att skapa, visa, ändra eller ta bort larm
-4. **Avsluta** - Säker avslutning av programmet, RAM och disk.**  
-> *Utvecklad som slutuppgift i kursen Systemutveckling i Python (DevOps-utbildning, Chas Academy).*
+Systemmonitor ger dig full kontroll över datorns prestanda. Övervaka CPU, RAM och disk i realtid, få varningar när något går fel, och analysera allt efteråt. Byggd med Python och designad för enkelhet.
+
+*Utvecklad som slutuppgift i kursen Systemutveckling i Python (DevOps-utbildning, Chas Academy).*
+
+*Forza Inter 🖤💙*
+
+</div>
+
+---
+
+## Vad löser detta?
+
+Har du någonsin undrat varför datorn blir seg? Eller velat veta exakt när CPU:n spikar? Systemmonitor visar dig precis det! LIVE, med intelligent larmhantering och automatisk loggning av allt som händer.
 
 *Forza Inter 🖤💙*
 
@@ -279,8 +286,8 @@ Jag har även tagit höjd för funktioner (t.ex. ljud via utils) utan att fullt 
 ### 🎓 **DevOps Engineering - Class of 2027** ❤️
 
 **┌─────────────────────────────────────────┐**  
-**│ 🚀 Chas Academy • Python • Systemutveckling │**  
-**│ 💙 Built with passion, powered by coffee   │**  
+**│ 🚀 Chas Academy • DevOps • Engineer │**  
+**│ 💙 Built with passion, powered by protein   │**  
 **│ 🖤 Inter Milano sempre nel cuore           │**  
 **└─────────────────────────────────────────┘**
 
