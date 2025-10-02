@@ -6,15 +6,15 @@
 
 <div align="center">
 
-![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
-![License](https://img.shields.io/badge/License-MIT-green.svg)
-![Status](https://img.shields.io/badge/Status-Active-success.svg)
+![Inter Milan](https://logoeps.com/wp-content/uploads/2013/03/inter-milan-vector-logo.png)
+
+*Forza Inter! 🖤💙*
 
 </div>
 
 ---
 
-## 📋 Projektbeskrivning
+## Projektbeskrivning
 
 Systemmonitor är ett robust övervakningsverktyg som kontinuerligt analyserar systemresurser med hjälp av biblioteket **psutil**.
 
@@ -29,7 +29,7 @@ Systemmonitor är ett robust övervakningsverktyg som kontinuerligt analyserar s
 
 ---
 
-## 🏗️ Arkitektur
+## Arkitektur
 
 Projektet följer en modulär arkitektur för optimal underhållbarhet och skalbarhet:
 
@@ -50,7 +50,7 @@ Detta gör programmet lättare att förstå, ändra och testa.
 
 ---
 
-## ❓ Vanliga Frågor & Svar
+## Vanliga Frågor & Svar
 
 <details>
 <summary><strong>Kan du förklara vad koden gör?</strong></summary>
@@ -168,7 +168,7 @@ Den här uppgiften är en förenklad övning som tränar på just grunden: mäta
 
 ---
 
-## 🚀 Installation & Användning
+## Installation & Användning
 
 ### Systemkrav
 - **Python:** 3.8 eller senare
@@ -202,7 +202,7 @@ Programmet erbjuder en intuitiv meny med följande alternativ:
 
 ---
 
-## 📄 Licens
+## Licens
 
 Detta projekt är utvecklat som del av en utbildningsuppgift. 
 
@@ -210,7 +210,7 @@ Detta projekt är utvecklat som del av en utbildningsuppgift.
 
 <div align="center">
 
-**Utvecklat med ❤️ för DevOps utbildningen**
+**DevOps ❤️ **
 
 
 </div>
