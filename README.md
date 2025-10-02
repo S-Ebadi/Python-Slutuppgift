@@ -1,13 +1,10 @@
 
-# Systemmonitor
+# Systemmonitor - Forza Inter 🖤💙
 
-**Slutuppgift - Systemmonitor**
 
-Systemmonitor ger dig full kontroll över datorns prestanda. Övervaka CPU, RAM och disk i realtid, få varningar när något går fel, och analysera allt efteråt. Byggd med Python och designad för enkelhet.
+Ett professionellt verktyg för systemövervakning som ger fullständig kontroll över datorns prestanda. Mäter CPU, RAM och diskanvändning i realtid, hanterar intelligenta larm och loggar all systemaktivitet automatiskt. Byggd med Python och psutil för maximal prestanda och enkelhet.
 
 *Utvecklad som slutuppgift i kursen Systemutveckling i Python (DevOps-utbildning, Chas Academy).*
-
-*Forza Inter 🖤💙*
 
 </div>
 
@@ -15,9 +12,7 @@ Systemmonitor ger dig full kontroll över datorns prestanda. Övervaka CPU, RAM 
 
 ## Vad löser detta?
 
-Har du någonsin undrat varför datorn blir seg? Eller velat veta exakt när CPU:n spikar? Systemmonitor visar dig precis det! LIVE, med intelligent larmhantering och automatisk loggning av allt som händer.
-
-*Forza Inter 🖤💙*
+Systemmonitor identifierar prestandaproblem genom kontinuerlig övervakning av systemresurser. Verktyget upptäcker CPU-spikar, minnesläckor och diskproblem i realtid med intelligent larmhantering och automatisk loggning av all systemaktivitet.
 
 </div>
 
@@ -60,7 +55,7 @@ systemmonitor/
 
 - **Separation of Concerns** – varje modul har sitt ansvar  
 - **Refaktorering** – mindre kod, samma funktionalitet  
-- **DevOps-tänk** – loggning, struktur, felhantering, persistens
+- **DevOps tänk** – loggning, struktur, felhantering, persistens
 
 ---
 
@@ -69,7 +64,7 @@ systemmonitor/
 ### Huvudmeny (main.py)
 Programmet startar med en interaktiv meny som erbjuder 7 huvudfunktioner:
 
-1. **Starta övervakning** - Kontinuerlig realtidsövervakning med live-display
+1. **Starta övervakning** - Kontinuerlig realtidsövervakning med live display
 2. **Lista aktiv övervakning** - Visar nuvarande status för pågående övervakning  
 3. **Skapa larm** - Interaktiv guide för att konfigurera nya larm
 4. **Visa larm** - Lista alla konfigurerade larm sorterade på typ
