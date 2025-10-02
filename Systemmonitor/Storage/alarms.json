@@ -1,0 +1,14 @@
+[
+  {
+    "id": "9294f7c7-a24e-4d58-bee3-5decda11bd8a",
+    "metric": "cpu",
+    "threshold": 95.0,
+    "direction": ">="
+  },
+  {
+    "id": "7d355860-ca03-4244-ae3c-d7655ec81665",
+    "metric": "disk",
+    "threshold": 70.0,
+    "direction": ">="
+  }
+]

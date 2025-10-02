@@ -1,6 +1,7 @@
 import psutil
 
-def cpu():  return psutil.cpu_percent(0.1)
+def cpu():
+    return psutil.cpu_percent(interval=1)
 
 def mem():
     m = psutil.virtual_memory()
