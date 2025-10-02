@@ -1,50 +1,46 @@
-from dataclasses import dataclass
-from enum import Enum
-from typing import List
+import json, uuid
 from pathlib import Path
-import json
 
-ALARM_FILE = Path("alarms.json")
+FILE = Path("alarms.json")
 
-class AlarmType(Enum):
-    CPU = "CPU"
-    MEM = "MINNE"
-    DISK = "DISK"
+def _load():
+    if not FILE.exists(): return []
+    try: return json.loads(FILE.read_text(encoding="utf-8"))
+    except: return []
 
-    @property
-    def display_name(self) -> str:
-        return {"CPU": "CPU larm", "MINNE": "Minneslarm", "DISK": "Disklarm"}[self.value]
+def _save(items): FILE.write_text(json.dumps(items, indent=2), encoding="utf-8")
 
-@dataclass(frozen=True)
-class Alarm:
-    type: AlarmType
-    threshold: int  # 1..100
+def list_all(): return _load()
 
-class AlarmStore:
-    """Lagrar larm i JSON"""
-    def __init__(self):
-        self._alarms: List[Alarm] = []
-        self.load()  # ladda vid start
+def create(metric, threshold, direction, description=""):
+    items = _load()
+    a = {"id": str(uuid.uuid4()), "metric": metric, "threshold": float(threshold),
+         "direction": direction, "description": description}
+    items.append(a); _save(items); return a
 
-    def load(self) -> None:
-        if not ALARM_FILE.exists():
-            self._alarms = []
-            return
-        data = json.loads(ALARM_FILE.read_text(encoding="utf-8"))
-        self._alarms = [Alarm(AlarmType(o["type"]), int(o["threshold"])) for o in data]
+def get(aid):
+    return next((a for a in _load() if a["id"] == aid), None)
 
-    def save(self) -> None:
-        payload = [{"type": a.type.value, "threshold": a.threshold} for a in self._alarms]
-        ALARM_FILE.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+def update(aid, **fields):
+    items = _load()
+    for a in items:
+        if a["id"] == aid:
+            a.update({k:v for k,v in fields.items() if v is not None})
+            _save(items); return True
+    return False
 
-    # CRUD
-    def add(self, type_: AlarmType, threshold: int) -> None:
-        self._alarms.append(Alarm(type_, threshold))
-        self._alarms.sort(key=lambda a: (a.type.value, a.threshold))
-        self.save()
+def delete(aid):
+    items = _load()
+    n = len(items)
+    items = [a for a in items if a["id"] != aid]
+    if len(items) != n: _save(items); return True
+    return False
 
-    def list_sorted(self) -> List[Alarm]:
-        return sorted(self._alarms, key=lambda a: (a.type.value, a.threshold))
-
-    def all(self) -> List[Alarm]:
-        return list(self._alarms)
+def evaluate(cpu_pct, mem_pct, disk_pct):
+    hits = []
+    val = {"cpu": cpu_pct, "memory": mem_pct, "disk": disk_pct}
+    for a in _load():
+        x = val[a["metric"]]
+        if (a["direction"] == ">=" and x >= a["threshold"]) or (a["direction"] == "<=" and x <= a["threshold"]):
+            hits.append(a)
+    return hits

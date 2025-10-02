@@ -1,35 +1,34 @@
-import sys, time, select
-from typing import Callable
+import sys, time
 
-def ask_int_in_range(prompt: str, low: int, high: int) -> int:
+def gb(b): return b/1024**3
+
+def press(): input("\nTryck Enter för att fortsätta...")
+
+def choice(prompt, opts):
     while True:
+        print(prompt); [print(f"{i+1}. {o}") for i,o in enumerate(opts)]
+        s = input("Välj: ").strip()
+        if s.isdigit() and 1 <= int(s) <= len(opts): return opts[int(s)-1]
+        print("Ogiltigt val.")
+
+def fnum(prompt, lo=None, hi=None):
+    while True:
+        s = input(prompt).strip().replace(",", ".")
         try:
-            v = int(input(prompt))
-            if low <= v <= high:
-                return v
-            print(f"Värdet måste vara mellan {low}-{high}.")
-        except (ValueError, KeyboardInterrupt):
-            print("Ogiltig inmatning. Försök igen.")
+            x = float(s)
+            if (lo is None or x>=lo) and (hi is None or x<=hi): return x
+        except: pass
+        print("Ogiltigt tal.")
 
-def press_enter_to_continue():
-    input("Tryck Enter för att gå tillbaka till huvudmenyn...")
+def spinner(i): return "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"[i%10]
 
-def format_bytes(n: int) -> str:
-    gb = n / (1024**3)
-    return f"{gb:.1f} GB"
+def led(on, label=""): return f"{('#' if on else '-') } {label}".strip()
 
-def nonblocking_enter_loop(tick: Callable[[], None], interval_sec: float = 1.0):
-    """Kör tick() periodiskt tills användaren trycker Enter (POSIX/macOS/Linux)."""
-    print("Övervakning är aktiv, tryck Enter för att återgå till menyn.")
+def clr_line():
+    sys.stdout.write("\r"); sys.stdout.write(" " * 120); sys.stdout.write("\r"); sys.stdout.flush()
+
+def beep(times=1, interval=0.1):
     try:
-        while True:
-            tick()
-            if sys.platform != "win32":
-                dr, _, _ = select.select([sys.stdin], [], [], interval_sec)
-                if dr:
-                    sys.stdin.readline()
-                    break
-            else:
-                time.sleep(interval_sec)
-    except KeyboardInterrupt:
-        pass
+        for _ in range(times):
+            sys.stdout.write("\a"); sys.stdout.flush(); time.sleep(interval)
+    except: pass
