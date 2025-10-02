@@ -1,0 +1,9 @@
+2025-10-02 20:47:56 - Övervakning startad
+2025-10-02 20:47:57 - LARM: CPU över 90.0%
+2025-10-02 20:47:59 - LARM: CPU över 90.0%
+2025-10-02 20:48:01 - LARM: CPU över 90.0%
+2025-10-02 20:48:03 - LARM: CPU över 90.0%
+2025-10-02 20:48:06 - LARM: CPU över 90.0%
+2025-10-02 20:48:07 - Övervakning stoppad
+2025-10-02 20:57:50 - Larm raderat: 0
+2025-10-02 20:57:55 - Larm raderat: 0

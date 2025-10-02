@@ -1,11 +1,14 @@
 import sys, time, os, json, datetime, threading
 import monitor
-import alarms
+from alarms import AlarmStore
 import utils
+import logger
 
+store = AlarmStore()
 monitoring_active = False
 last_status = {}
 session_log = []
+
 
 def start_overvakning():
     """Aktivt övervakningsläge: mäter kontinuerligt, triggar larm och sparar logg."""
@@ -13,6 +16,7 @@ def start_overvakning():
     monitoring_active = True
     session_log = []
     print("\nÖvervakning startad. Tryck Enter för att avsluta.\n")
+    logger.log("Övervakning startad")
 
     stop_flag = {"stop": False}
     def wait_for_enter():
@@ -21,30 +25,30 @@ def start_overvakning():
     threading.Thread(target=wait_for_enter, daemon=True).start()
 
     while monitoring_active and not stop_flag["stop"]:
-        cpu = monitor.cpu()
-        mem_pct, mem_used, mem_total = monitor.mem()
-        disk_pct, disk_used, disk_total = monitor.disk()
-        last_status = {"cpu": cpu, "mem": mem_pct, "disk": disk_pct}
+        cpu = monitor.read_cpu()
+        mem = monitor.read_memory()
+        disk = monitor.read_disk()
+        last_status = {"cpu": cpu, "mem": mem.percent, "disk": disk.percent}
 
         sys.stdout.write(
-            f"\rCPU {cpu:.0f}% | Minne {mem_pct:.0f}% ({utils.gb(mem_used):.1f} GB / {utils.gb(mem_total):.1f} GB) | "
-            f"Disk {disk_pct:.0f}% ({utils.gb(disk_used):.1f} GB / {utils.gb(disk_total):.1f} GB)   "
+            f"\rCPU {cpu:.0f}% | Minne {mem.percent:.0f}% ({utils.gb(mem.used):.1f} GB / {utils.gb(mem.total):.1f} GB) | "
+            f"Disk {disk.percent:.0f}% ({utils.gb(disk.used):.1f} GB / {utils.gb(disk.total):.1f} GB)   "
         )
         sys.stdout.flush()
 
-        hits = alarms.evaluate(cpu, mem_pct, disk_pct)
-        alarms_triggered = []
-        for a in hits:
-            msg = f"LARM: {a['metric'].upper()} {a['direction']} {a['threshold']:.0f}%"
-            alarms_triggered.append(msg)
-            print(f"\n*** {msg} ***")
-            utils.beep(2, 0.2)  # ge ljudsignal när larm triggas
+        # Kolla larm
+        for metric, val in last_status.items():
+            alarm = store.get_relevant(metric, val)
+            if alarm:
+                msg = f"LARM: {metric.upper()} över {alarm['threshold']}%"
+                print(f"\n*** {msg} ***")
+                logger.log(msg)
+                utils.beep(1, 0.2)
 
         session_log.append({
             "cpu": cpu,
-            "mem": mem_pct,
-            "disk": disk_pct,
-            "alarms": alarms_triggered,
+            "mem": mem.percent,
+            "disk": disk.percent,
             "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
         })
 
@@ -52,6 +56,7 @@ def start_overvakning():
 
     monitoring_active = False
     print("\nAvslutar övervakning...")
+    logger.log("Övervakning stoppad")
 
     # --- Spara logg med tidsstämpel i Storage ---
     storage_dir = os.path.join(os.path.dirname(__file__), "Storage")
@@ -61,6 +66,7 @@ def start_overvakning():
     with open(log_file, "w") as f:
         json.dump(session_log, f, indent=2)
     print(f"Senaste session sparad till {log_file}")
+
 
 def list_active():
     """Visar status om övervakning är igång."""
@@ -73,72 +79,57 @@ def list_active():
         print(f"Disk: {last_status.get('disk',0):.0f}%")
     utils.press()
 
+
 def create_alarm():
     """Meny för att skapa larm enligt instruktionerna."""
     print("\n=== Skapa larm ===")
-    print("1. CPU (1–100)")
-    print("2. Disk (1–100)")
-    print("3. Memory (1–100)")
-    choice = input("Välj: ").strip()
-
-    if choice == "1":
-        metric = "cpu"
-    elif choice == "2":
-        metric = "disk"
-    elif choice == "3":
-        metric = "memory"
-    else:
-        print("Fel val."); return
-
-    t = input(f"Ställ in nivå för {metric.upper()} (1–100): ").strip()
-    if not t.isdigit() or not (1 <= int(t) <= 100):
-        print("Felaktig nivå."); return
-
-    t = float(t)
-    a = alarms.create(metric, t, ">=")
-    print(f"Larm för {metric.upper()} satt till {t:.0f}%. (ID {a['id']})")
+    metric = utils.choice("Välj metric:", ["cpu", "disk", "mem"])
+    thr = utils.fnum("Ställ in nivå (1–100): ", 1, 100)
+    store.add(metric, thr)
+    logger.log(f"Larm skapat: {metric} {thr}%")
+    print(f"Larm för {metric.upper()} satt till {thr:.0f}%.")
     utils.press()
+
 
 def show_alarms():
     """Visar alla larm, sorterade på typ."""
-    L = sorted(alarms.list_all(), key=lambda a: a["metric"])
+    L = store.list()
     if not L:
         print("\nInga larm."); utils.press(); return
-
     print("\n— Larm —")
     for i,a in enumerate(L,1):
-        print(f"{i}. {a['metric'].upper()} larm {a['threshold']:.0f}% (ID {a['id']})")
+        print(f"{i}. {a['metric'].upper()} larm {a['threshold']:.0f}%")
     utils.press()
+
 
 def edit_alarm():
     """Ändra eller ta bort ett larm."""
-    L = alarms.list_all()
+    L = store.list()
     if not L:
         print("Inga larm."); utils.press(); return
 
     print("\n— Välj larm att ändra/ta bort —")
     for i,a in enumerate(L,1):
-        print(f"{i}. {a['metric'].upper()} larm {a['threshold']:.0f}% (ID {a['id']})")
-
+        print(f"{i}. {a['metric'].upper()} larm {a['threshold']:.0f}%")
     s = input("Nummer: ").strip()
     if not s.isdigit() or not (1 <= int(s) <= len(L)):
         print("Fel val."); return
-    a = L[int(s)-1]
+    idx = int(s)-1
 
     f = input("t = ändra threshold, d = ta bort: ").strip().lower()
     if f == "t":
-        n = input("Ny nivå (1–100): ").strip()
-        if n.isdigit() and 1 <= int(n) <= 100:
-            alarms.update(a["id"], threshold=float(n))
-            print("Uppdaterat.")
-        else:
-            print("Felaktig nivå.")
+        thr = utils.fnum("Ny nivå (1–100): ", 1, 100)
+        store.update(idx, thr)
+        logger.log(f"Larm uppdaterat: {idx} → {thr}%")
+        print("Uppdaterat.")
     elif f == "d":
-        alarms.delete(a["id"])
+        store.remove(idx)
+        logger.log(f"Larm raderat: {idx}")
         print("Borttaget.")
     else:
         print("Fel val.")
     utils.press()
+
 
 def show_last_results():
     """Visar resultat från senaste övervakningen."""
@@ -148,16 +139,12 @@ def show_last_results():
 
     print("\n=== Senaste övervakning ===")
     print(f"Totalt antal mätpunkter: {len(session_log)}")
-
-    alarms_total = sum(len(x["alarms"]) for x in session_log)
-    print(f"Totalt antal larm: {alarms_total}")
-
+    print(f"Totalt antal larm: (se loggfil för detaljer)")
     print("\nSista mätpunkterna:")
     for row in session_log[-5:]:
         print(f"CPU {row['cpu']:.0f}%, Minne {row['mem']:.0f}%, Disk {row['disk']:.0f}%")
-        for alarm in row["alarms"]:
-            print(f"   -> {alarm}")
     utils.press()
+
 
 def main():
     actions = [
@@ -180,6 +167,7 @@ def main():
         if fn is None:
             print("Avslutar..."); break
         fn()
+
 
 if __name__=="__main__":
     main()

@@ -1,12 +1,13 @@
 import psutil
 
-def cpu():
+def read_cpu():
+    """Returnera CPU-användning i procent"""
     return psutil.cpu_percent(interval=1)
 
-def mem():
-    m = psutil.virtual_memory()
-    return m.percent, m.used, m.total
+def read_memory():
+    """Returnera minnesobjektet (psutil.virtual_memory)"""
+    return psutil.virtual_memory()
 
-def disk():
-    d = psutil.disk_usage("/")
-    return d.percent, d.used, d.total
+def read_disk():
+    """Returnera diskobjektet (psutil.disk_usage)"""
+    return psutil.disk_usage('/')
