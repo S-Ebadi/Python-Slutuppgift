@@ -4,11 +4,7 @@
 > **En professionell systemmonitor i Python som övervakar CPU, RAM och disk.**  
 > *Utvecklad som slutuppgift i kursen Systemutveckling i Python (DevOps-utbildning).*
 
-<div align="center">
-
-![Inter Milan](https://logoeps.com/wp-content/uploads/2013/03/inter-milan-vector-logo.png)
-
-*Forza Inter! 🖤💙*
+*Forza Inter 🖤💙*
 
 </div>
 
@@ -179,7 +175,7 @@ Den här uppgiften är en förenklad övning som tränar på just grunden: mäta
 
 1. **Klona repository**
    ```bash
-   git clone https://github.com/[ditt-användarnamn]/systemmonitor.git
+   git clone https://github.com/[S-Ebadi]/systemmonitor.git
    cd systemmonitor
    ```
 
