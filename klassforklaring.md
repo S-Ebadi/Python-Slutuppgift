@@ -1,10 +1,4 @@
 
-# Programmering med Funktioner vs Klasser - En Förklaring för Nybörjare
-
-Hej och välkommen till din första resa in i Python-programmering! 👋  
-
-Om du precis började din DevOps-utbildning kanske du har hört talas om **klasser** och **objektorienterad programmering** - det låter säkert skrämmande komplicerat, eller hur? Men lugn! I detta projekt använder jag något mycket enklare: **funktioner**.
-
 ---
 
 ## 🤔 Vad är skillnaden mellan funktioner och klasser?
@@ -171,4 +165,3 @@ Men eftersom vi bara övervakar ETT system åt gången räcker funktioner gott o
 
 ---
 
-*Lycka till med dina studier, och kom ihåg: Alla världens bästa programmerare började exakt där du är nu! 💪*

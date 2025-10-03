@@ -1,12 +1,12 @@
 import json, os, uuid
+import logger
 
-# Alla larm sparas i en JSON-fil under Storage/
+# Alla larm sparas i Storage/
 storage_dir = os.path.join(os.path.dirname(__file__), "Storage")
 os.makedirs(storage_dir, exist_ok=True)
 alarms_file = os.path.join(storage_dir, "alarms.json")
 
 def load():
-    """Laddar alla larm från JSON-filen."""
     if os.path.exists(alarms_file):
         try:
             with open(alarms_file, "r") as f:
@@ -16,46 +16,47 @@ def load():
     return []
 
 def save(data):
-    """Sparar alla larm till JSON-filen."""
     with open(alarms_file, "w") as f:
         json.dump(data, f, indent=2)
 
 def list_all():
-    """Returnerar alla larm som lista."""
     return load()
 
 def create(metric, threshold, direction=">="):
-    """Skapar nytt larm och sparar det i filen."""
     data = load()
     alarm = {
-        "id": str(uuid.uuid4()), 
-        "metric": metric, 
-        "threshold": threshold, 
+        "id": str(uuid.uuid4()),
+        "metric": metric,
+        "threshold": threshold,
         "direction": direction
     }
     data.append(alarm)
     save(data)
+    logger.log_event(f"Nytt larm skapat: {metric.upper()} {direction} {threshold}%")
     return alarm
 
 def update(alarm_id, **kwargs):
-    """Uppdaterar ett larm (t.ex. threshold)."""
     data = load()
     for a in data:
         if a["id"] == alarm_id:
             a.update(kwargs)
+            logger.log_event(f"Larm uppdaterat: {a['metric'].upper()} -> {a}")
     save(data)
 
 def delete(alarm_id):
-    """Tar bort ett larm med valt ID."""
     data = load()
+    target = None
+    for a in data:
+        if a["id"] == alarm_id:
+            target = a
     data = [a for a in data if a["id"] != alarm_id]
     save(data)
+    if target:
+        logger.log_event(f"Larm borttaget: {target['metric'].upper()} {target['threshold']}%")
 
 def evaluate(cpu, mem, disk):
-    """Kollar om något larm triggas baserat på aktuella värden."""
     hits = []
     for a in load():
-        # Bestäm vilket värde som ska jämföras
         if a["metric"] == "cpu":
             value = cpu
         elif a["metric"] == "memory":
@@ -65,7 +66,6 @@ def evaluate(cpu, mem, disk):
         else:
             continue
 
-        # Jämför mot threshold
         if a["direction"] == ">=" and value >= a["threshold"]:
             hits.append(a)
     return hits
