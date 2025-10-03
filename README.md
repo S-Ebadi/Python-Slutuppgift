@@ -222,6 +222,4 @@ Det gör att jag kan förklara både *vad* koden gör och *varför* den är uppb
 
 ---
 
-### Hälsning
-Jag vill avsluta med att säga:  
-**Jag hejar på alla i DevOps-25-kullen på Chas Academy ❤️**
+**❤️ DevOps25 kullen på Chas Academy ❤️**
