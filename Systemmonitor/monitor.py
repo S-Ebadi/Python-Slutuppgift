@@ -1,15 +1,29 @@
+# Monitor - computer stats
 import psutil
 
+def get_cpu():
+    return int(psutil.cpu_percent(interval=1))
+
+def get_ram():
+    return int(psutil.virtual_memory().percent)
+
+def get_disk():
+    return int(psutil.disk_usage('/').percent)
+
+# Extra functions for more info
 def read_cpu():
-    """Returnerar CPU-användning i procent."""
-    return psutil.cpu_percent()
+    return get_cpu()
 
 def read_memory():
-    """Returnerar minnesanvändning som (procent, använt, totalt)."""
     mem = psutil.virtual_memory()
-    return mem.percent, mem.used, mem.total
+    percent = int(mem.percent)
+    used_gb = int(mem.used / 1000000000)
+    total_gb = int(mem.total / 1000000000)
+    return percent, used_gb, total_gb
 
 def read_disk():
-    """Returnerar diskanvändning som (procent, använt, totalt)."""
     disk = psutil.disk_usage('/')
-    return disk.percent, disk.used, disk.total
+    percent = int(disk.percent)
+    used_gb = int(disk.used / 1000000000)
+    total_gb = int(disk.total / 1000000000)
+    return percent, used_gb, total_gb

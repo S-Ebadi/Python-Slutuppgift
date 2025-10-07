@@ -1,11 +1,18 @@
-import os, datetime
+# Log Writer
+import datetime, os
 
-storage_dir = os.path.join(os.path.dirname(__file__), "Storage")
-os.makedirs(storage_dir, exist_ok=True)
+def write_log(message):
+    import os, time
+    
+    # Make Storage folder if needed
+    if not os.path.exists("Storage"): 
+        os.makedirs("Storage")
+    
+    # Get current time as simple text
+    current_time = str(int(time.time()))
+    
+    # Write message to log file
+    with open("Storage/log.txt", "a") as f:
+        f.write(f"[{current_time}] {message}\n")
 
-def log_event(event):
-    """Skriver en händelse till en daglig loggfil i Storage/."""
-    ts = datetime.datetime.now().strftime("%Y%m%d")
-    logfile = os.path.join(storage_dir, f"log-{ts}.txt")
-    with open(logfile, "a") as f:
-        f.write(f"{datetime.datetime.now():%Y-%m-%d %H:%M:%S} - {event}\n")
+

@@ -1,225 +1,257 @@
 
-# Systemmonitor – Forza Inter 🖤💙
+# System Monitor - Python Exam project
 
-Ett professionellt verktyg för systemövervakning som ger kontroll över datorns prestanda.  
-Mäter CPU-, RAM- och diskanvändning i realtid, hanterar larm och loggar händelser.  
-Byggd i Python med hjälp av **psutil**.
+A professional system monitoring application that provides control over computer performance.  
+Monitors CPU, RAM, and disk usage in real-time with alarm functionality and event logging.  
+Built in Python using **psutil**.
 
-*Utvecklad som slutuppgift i kursen Systemutveckling i Python (DevOps-utbildning, Chas Academy).*
-
----
-
-## Projektbeskrivning
-
-Systemmonitor är ett terminalbaserat övervakningsverktyg som erbjuder:
-
-| Funktion | Beskrivning |
-|----------|-------------|
-| **Övervakning** | Startar och stoppar aktivt övervakningsläge, avslutas med Enter |
-| **Statusrapporter** | Visar nuvarande CPU-, RAM- och diskanvändning |
-| **Larmhantering** | Skapa, visa, ändra och ta bort larm (CPU, RAM, Disk) |
-| **Persistens** | Larm sparas i `Storage/alarms.json` mellan sessioner |
-| **Loggning** | Händelser loggas i `Storage/log-*.txt` med tidsstämpel |
-| **Sessionhistorik** | Varje session sparas i `Storage/session-*.json` |
-| **Närmaste larm** | Endast det mest relevanta larmet triggas (ex. CPU 80% i stället för 60/70%) |
+*Developed as a final project in Python System Development course (DevOps program, Chas Academy).*
 
 ---
 
-## Arkitektur
+## Project Overview
 
-Programmet är uppdelat i moduler för tydlighet och underhållbarhet.
+System Monitor is a terminal-based monitoring tool that provides:
+
+| Feature | Description |
+|---------|-------------|
+| **Monitoring** | Automated system monitoring with fixed duration (10 readings) |
+| **Status Reports** | Display current CPU, RAM, and disk usage |
+| **Alarm Management** | Create, view, edit, and delete alarms (CPU, RAM, Disk) |
+| **Persistence** | Alarms saved in `Storage/alarms.json` between sessions |
+| **Logging** | Events logged to `Storage/log.txt` with timestamps |
+| **Session History** | Each monitoring session saved to `Storage/session-*.json` |
+| **Simple Mode** | Quick 5-reading monitoring for basic system status |
+
+---
+
+## Architecture
+
+The program is divided into modules for clarity and maintainability.
 
 ```
 Systemmonitor/
-├── main.py                        # Meny, övervakningslogik och användarflöde
-├── monitor.py                     # Funktioner för att mäta CPU, RAM och Disk via psutil
-├── alarms.py                      # AlarmStore-klass: skapa, lista, uppdatera, ta bort, evaluera larm
-├── utils.py                       # Hjälpfunktioner: input, validering, formatering, UI
-├── logger.py                      # Skriver händelser till loggfil med tidsstämpel
-├── requirements.txt               # Beroenden (psutil)
-├── Storage/                       # Datafiler
-│   ├── alarms.json               # Alla aktiva larm
-│   ├── session-YYYYMMDD-HHMMSS.json  # Senaste sessionsdata
-│   └── log-YYYYMMDD.txt          # Händelselogg
-└── Dev-Logg/                     # Personlig utvecklingslogg
+├── main.py          # Main menu, monitoring logic and user flow
+├── monitor.py       # Functions to measure CPU, RAM and Disk via psutil
+├── alarms.py        # Alarm management: create, list, update, delete, evaluate alarms
+├── utils.py         # Utility functions: session data and file operations
+├── logger.py        # Write events to log file with timestamp
+├── requirements.txt # contains psutil
+└── Storage/         # Data files (auto-created)
+    ├── alarms.json     # All active alarms
+    ├── session-*.json  # Session data files
+    └── log.txt         # Event log
 ```
 
-### Designfilosofi
-- **Separation of Concerns**: varje modul har tydligt ansvar.  
-- **Persistens**: JSON-filer gör att larm och sessioner bevaras mellan körningar.  
-- **Loggning**: händelser spåras med tidsstämpel för transparens.  
-- **Enkelhet**: funktionerna hålls små och begripliga.
+### Design Philosophy
+- **Separation of Concerns**: each module has clear responsibility
+- **Hybrid Programming**: combines functional programming (main logic) with OOP (Alarm class)
+- **Persistence**: JSON files ensure alarms and sessions are preserved between runs
+- **Logging**: events are tracked with timestamps for transparency
+- **Simplicity**: functions are kept small and understandable
 
 ---
 
-## Funktionell Specifikation
+## Functional Specification
 
-### Huvudmeny (main.py)
-Programmet erbjuder dessa alternativ:
+### Main Menu (main.py)
+The program offers these options:
 
-1. **Starta övervakning** – kontinuerlig realtidsövervakning med Enter för att stoppa  
-2. **Lista aktiv övervakning** – visar status om övervakning är igång  
-3. **Skapa larm** – konfigurera CPU-/RAM-/Disklarm (1–100%)  
-4. **Visa larm** – lista alla aktiva larm från `Storage/alarms.json`  
-5. **Ändra/Ta bort larm** – uppdatera eller ta bort befintliga larm  
-6. **Visa senaste övervakning** – summering av senaste session från `Storage/session-*.json`  
-7. **Övervakningsläge** – enklare statusläge (utan loggning)  
-8. **Avsluta** – stänger programmet
+1. **Start monitoring** – automated monitoring runs 10 times then stops automatically
+2. **Show status** – displays current monitoring status and last recorded values
+3. **Create alarm** – configure CPU/RAM/Disk alarms (1-100% thresholds)
+4. **Show alarms** – list all active alarms from `Storage/alarms.json`
+5. **Edit alarms** – update or delete existing alarms
+6. **Show last session** – summary of most recent session from `Storage/session-*.json`
+7. **Simple mode** – quick 5-reading monitoring mode
+8. **Exit** – closes the program
 
 ### Monitor (monitor.py)
-Ansvarar för att hämta data med **psutil**:
+Responsible for fetching data with **psutil**:
 ```python
-def read_cpu():    # Returnerar CPU-användning i %
-def read_memory(): # Returnerar (percent, used, total) för RAM
-def read_disk():   # Returnerar (percent, used, total) för disk
+def get_cpu():    # Returns CPU usage in %
+def get_ram():    # Returns RAM usage in %
+def get_disk():   # Returns disk usage in %
 ```
 
-### Larm (alarms.py)
-**AlarmStore**-klass hanterar CRUD för larm:
-- `create(metric, threshold, direction)` – skapa nytt larm  
-- `list_all()` – lista alla larm  
-- `update(id, threshold)` – ändra ett larm  
-- `delete(id)` – ta bort larm  
-- `evaluate(cpu, mem, disk)` – kolla aktiva larm och trigga relevanta  
+### Alarms (alarms.py)
+Hybrid approach using both OOP and functional programming:
 
-### Hjälpfunktioner (utils.py)
-- `gb(bytes)` – konverterar bytes till GB  
-- `press()` – väntar på Enter  
-- `choice()` – validerar menyval  
-- `fnum()` – validerar nummer  
-- `spinner()`, `led()`, `clr_line()` – UI-finesser  
+**Alarm Class:**
+```python
+class Alarm:
+    def __init__(self, alarm_type, threshold)
+    def is_triggered(self, value)
+    def __str__(self)
+```
 
-### Loggning (logger.py)
-- Skapar en loggfil i `Storage/` med tidsstämpel i namnet  
-- Exempel: `log-20251002-204756.txt`  
-- Loggar: programstart, larmtriggers, avslut
+**Alarm Management Functions:**
+- `create_new_alarm()` – create new alarm with user input (uses Alarm class)
+- `show_all_alarms()` – list all configured alarms
+- `edit_delete_alarms()` – modify or remove existing alarms
+- `check_alarms(cpu, ram, disk)` – evaluate alarms using Alarm.is_triggered() method
+
+### Utilities (utils.py)
+- `save_session_data(data)` – save monitoring session to JSON file
+- `get_last_session_file()` – retrieve path to most recent session file
+- `clear_screen()` – clear terminal screen
+
+### Logging (logger.py)
+- Creates log entries in `Storage/log.txt`
+- Uses simple timestamp format
+- Logs: program events, alarm triggers, session data
 
 ---
 
-## Dataflöde & Persistens
+## Data Flow & Persistence
 
-### Sessionsdata
-Varje övervakning sparas i `Storage/session-*.json` med mätpunkter och triggat larm.
+### Session Data
+Each monitoring session is saved to `Storage/session-*.json` with measurement points and triggered alarms.
 
-Exempel:
+Example:
 ```json
 {
-  "cpu": 99.9,
-  "mem": 72.7,
-  "disk": 6.8,
-  "alarms": ["CPU över 90%"],
-  "timestamp": "2025-10-02 20:47:57"
+  "cpu": 45,
+  "ram": 67,
+  "disk": 23,
+  "time": "1696281234"
 }
 ```
 
-### Händelselogg
-Skrivs till `Storage/log-*.txt`:
+### Event Log
+Written to `Storage/log.txt`:
 ```
-2025-10-02 20:47:56 - Övervakning startad
-2025-10-02 20:47:57 - LARM: CPU över 90%
-2025-10-02 20:48:07 - Övervakning stoppad
+[1696281234] Monitoring started
+[1696281235] CPU usage is 95% (threshold: 80%)
+[1696281256] Monitoring stopped
 ```
 
 ---
 
-## Vanliga Frågor & Svar
+## Usage Instructions
 
-<details>
-<summary><strong>Kan du förklara vad koden gör?</strong></summary>
-Programmet övervakar CPU, RAM och disk.  
-Användaren kan skapa larm, och om gränsen nås triggas larm i terminalen och loggas i JSON/textfil.
-</details>
+### Installation
+1. Ensure Python 3.6+ is installed
+2. Install dependencies:
+   ```bash
+   pip install -r Systemmonitor/requirements.txt
+   ```
 
-<details>
-<summary><strong>Varför är arkitekturen uppdelad så här?</strong></summary>
-För att separera ansvar:  
-- `main.py` för meny och användarflöde  
-- `monitor.py` för mätningar  
-- `alarms.py` för larmhantering  
-- `utils.py` för input och UI  
-- `logger.py` för loggning  
-Det gör koden lättare att förstå och ändra.
-</details>
-
-<details>
-<summary><strong>Varför används psutil?</strong></summary>
-För att enkelt läsa systemdata i Python:
-```python
-import psutil
-print(psutil.cpu_percent())
-```
-</details>
-
-<details>
-<summary><strong>Varför sparas larm i JSON?</strong></summary>
-För att larm ska finnas kvar mellan körningar. Alla larm sparas i `Storage/alarms.json`.
-</details>
-
-<details>
-<summary><strong>Vad händer om psutil inte är installerat?</strong></summary>
-Programmet kraschar.  
-**Lösning:** installera beroenden med `pip install -r requirements.txt`.
-</details>
-
-<details>
-<summary><strong>Hur testades koden?</strong></summary>
-Genom manuella tester i terminalen:  
-- Starta och stoppa övervakning  
-- Skapa och ta bort larm  
-- Kontrollera att logg- och sessionsfiler sparades i `Storage/`
-</details>
-
-<details>
-<summary><strong>Största förbättringen jämfört med första versionen?</strong></summary>
-Att systemet nu har:  
-- Larm som sparas mellan sessioner  
-- Fullständig loggning av händelser  
-- Närmaste larm logik (bara ett triggas åt gången)  
-- Sessionsfiler för analys i efterhand
-</details>
-
-<details>
-<summary><strong>Hur kan programmet vidareutvecklas?</strong></summary>
-- Historisk visualisering (grafer)  
-- Slack/Teams-notifieringar  
-- Webbaserad dashboard (Flask/Grafana)  
-- Docker-containerisering
-</details>
-
----
-
-## Installation & Körning
-
-### Systemkrav
-- Python 3.8+  
-- OS: Windows/macOS/Linux  
-- Beroenden: `psutil`  
-
-### Körning
+### Running the Application
 ```bash
-# Klona repo
-git clone https://github.com/S-Ebadi/systemmonitor.git
-cd systemmonitor/Systemmonitor
+python3 Systemmonitor/main.py
+```
 
-# Installera beroenden
-pip install -r requirements.txt
+### Menu Options
 
-# Starta
-python3 main.py
+**1. Start monitoring**
+- Runs system monitoring for 10 readings
+- Each reading shows CPU, RAM, and disk usage percentages
+- Checks for alarm conditions and displays alerts
+- Automatically saves session data to JSON file
+- Waits 2 seconds between readings
+
+**2. Show status** 
+- Displays whether monitoring is currently active
+- Shows last recorded system values if available
+
+**3. Create alarm**
+- Choose alarm type: CPU (1), RAM (2), or DISK (3)
+- Set threshold percentage (1-100%)
+- Alarm is saved to `Storage/alarms.json`
+
+**4. Show alarms**
+- Lists all configured alarms with their thresholds
+- Shows format: "1. CPU >= 80%"
+
+**5. Edit alarms**
+- Select alarm by number
+- Choose to change threshold or delete alarm
+- Changes are saved immediately
+
+**6. Show last session**
+- Displays total measurements from most recent session
+- Shows last 5 readings with timestamps and values
+
+**7. Simple mode**
+- Quick monitoring mode with 5 readings
+- Shows basic CPU, RAM, disk status
+- No alarm checking or data saving
+
+**8. Exit**
+- Safely closes the application
+- Logs program termination
+
+---
+
+## Technical Details
+
+### System Requirements
+- Python 3.6+
+- OS: Windows/macOS/Linux  
+- Dependencies: `psutil`
+
+### File Structure
+All data files are automatically created in the `Storage/` directory:
+- `alarms.json` - Persistent alarm configurations
+- `session-[timestamp].json` - Monitoring session data
+- `log.txt` - Event and error logging
+
+### Code Architecture
+The application demonstrates key programming concepts:
+- **Modular Design**: Separation of concerns across multiple files
+- **Hybrid Programming**: Object-Oriented Programming (Alarm class) combined with Functional Programming
+- **File I/O**: Reading and writing JSON and text files
+- **Error Handling**: Basic exception handling for user input
+- **Data Structures**: Using lists and dictionaries for data management
+- **External Libraries**: Integration with psutil for system monitoring
+
+---
+
+## Example Output
+
+```
+=== SYSTEM MONITOR ===
+1. Start monitoring
+2. Show status
+3. Create alarm
+4. Show alarms
+5. Edit alarms
+6. Show last session
+7. Simple mode
+8. Exit
+
+Enter choice: 1
+
+Starting system monitoring...
+Monitoring will run 10 times, then stop automatically
+Reading 1/10:
+CPU: 45% | RAM: 67% | DISK: 23%
+Waiting 2 seconds...
+Reading 2/10:
+CPU: 48% | RAM: 68% | DISK: 23%
+ALERT: CPU usage is 48% (threshold: 40%)
+...
 ```
 
 ---
 
-## Reflektion
+## Learning Outcomes
 
-Att bygga systemmonitorn har varit en resa i att förstå Python på djupet:  
-- **Struktur**: vikten av moduler, loggar och JSON  
-- **Enkelhet**: refaktorering utan att tappa funktionalitet  
-- **Helhetstänk**: DevOps handlar om både kod, verktyg och process  
-
-Jag har lärt mig att bryta ner ett komplext projekt i tydliga delar och sedan sätta ihop det till en helhet.  
-Det gör att jag kan förklara både *vad* koden gör och *varför* den är uppbyggd på detta sätt.
+Building this system monitor demonstrates understanding of:
+- **File Operations**: JSON and text file handling
+- **User Interface**: Menu-driven program design
+- **Data Persistence**: Saving and loading application state
+- **Error Handling**: Input validation and exception management
+- **Module Organization**: Clean code structure and separation of concerns
+- **External Libraries**: Using psutil for system monitoring
 
 ---
 
-**❤️ DevOps25 kullen på Chas Academy ❤️**
+## Reflection
+
+This project showcases practical Python programming skills suitable for a DevOps environment. The clean, modular design makes the code easy to understand, modify, and extend. The application successfully combines system monitoring, data persistence, and user interaction in a professional yet accessible way.
+
+---
+
+**Said Ebadi - DevOps/Class of 2025 - Chas Academy**

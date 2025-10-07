@@ -1,191 +1,163 @@
-import sys, time, os, json, datetime, threading
-import monitor
-import alarms
-import utils
+# System Monitor - Main Application
+import time
+import json
+import monitor 
+import alarms 
+import utils 
 import logger
 
+# Global state variables
 monitoring_active = False
-last_status = {}
-session_log = []
+current_cpu = 0
+current_ram = 0
+current_disk = 0
+session_data = []
 
-def start_overvakning():
-    global monitoring_active, last_status, session_log
+def start_monitoring():
+    global monitoring_active, current_cpu, current_ram, current_disk, session_data
+    
+    print("Starting system monitoring...")
+    print("Monitoring will run 10 times, then stop automatically")
+    
+    # Set up monitoring
     monitoring_active = True
-    session_log = []
-    print("\nÖvervakning startad. Tryck Enter för att avsluta.\n")
-    logger.log_event("Övervakning startad")
-
-    stop_flag = {"stop": False}
-    def wait_for_enter():
-        input()
-        stop_flag["stop"] = True
-    threading.Thread(target=wait_for_enter, daemon=True).start()
-
-    while monitoring_active and not stop_flag["stop"]:
-        cpu = monitor.read_cpu()
-        mem_pct, mem_used, mem_total = monitor.read_memory()
-        disk_pct, disk_used, disk_total = monitor.read_disk()
-        last_status = {"cpu": cpu, "mem": mem_pct, "disk": disk_pct}
-
-        sys.stdout.write(
-            f"\rCPU {cpu:.0f}% | Minne {mem_pct:.0f}% ({utils.gb(mem_used):.1f} GB / {utils.gb(mem_total):.1f} GB) | "
-            f"Disk {disk_pct:.0f}% ({utils.gb(disk_used):.1f} GB / {utils.gb(disk_total):.1f} GB)   "
-        )
-        sys.stdout.flush()
-
-        hits = alarms.evaluate(cpu, mem_pct, disk_pct)
-        alarms_triggered = []
-        for a in hits:
-            msg = f"LARM: {a['metric'].upper()} {a['direction']} {a['threshold']:.0f}%"
-            alarms_triggered.append(msg)
-            print(f"\n*** {msg} ***")
-            logger.log_event(f"{msg} triggat")
-
-        session_log.append({
-            "cpu": cpu,
-            "mem": mem_pct,
-            "disk": disk_pct,
-            "alarms": alarms_triggered,
-            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
-        })
-
-        time.sleep(1)
-
+    session_data = []
+    count = 0
+    
+    # Simple monitoring loop - runs 10 times
+    while count < 10:
+        count = count + 1
+        
+        # Get current values
+        current_cpu = monitor.get_cpu()
+        current_ram = monitor.get_ram()  
+        current_disk = monitor.get_disk()
+        
+        # Show current status
+        utils.pretty_print_status(current_cpu, current_ram, current_disk, count)
+        
+        # Check alarms
+        alarm_messages = alarms.check_alarms(current_cpu, current_ram, current_disk)
+        for message in alarm_messages:
+            print("ALERT: " + message)
+            logger.write_log(message)
+        
+        # Save session data
+        timestamp = str(int(time.time()))
+        entry = {"cpu": current_cpu, "ram": current_ram, "disk": current_disk, "time": timestamp}
+        session_data.append(entry)
+        
+        # Wait before next reading
+        if count < 10:
+            print("Waiting 2 seconds...")
+            time.sleep(2)
+    
+    # Stop monitoring
+    print("\nMonitoring completed!")
     monitoring_active = False
-    print("\nAvslutar övervakning...")
-    logger.log_event("Övervakning avslutad")
+    utils.save_session_data(session_data)
+    logger.write_log("Monitoring stopped")
 
-    storage_dir = os.path.join(os.path.dirname(__file__), "Storage")
-    os.makedirs(storage_dir, exist_ok=True)
-    ts = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-    log_file = os.path.join(storage_dir, f"session-{ts}.json")
-    with open(log_file, "w") as f:
-        json.dump(session_log, f, indent=2)
-    print(f"Senaste session sparad till {log_file}")
-    logger.log_event(f"Session sparad: {log_file}")
-
-def list_active():
-    if not monitoring_active:
-        print("\nIngen övervakning är aktiv.")
+def show_status():
+    if monitoring_active:
+        status = "Monitoring active - CPU: " + str(current_cpu) + "% RAM: " + str(current_ram) + "% DISK: " + str(current_disk) + "%"
+        print(status)
     else:
-        print("\n— Aktiv övervakning —")
-        print(f"CPU: {last_status.get('cpu',0):.0f}%")
-        print(f"Minne: {last_status.get('mem',0):.0f}%")
-        print(f"Disk: {last_status.get('disk',0):.0f}%")
-    utils.press()
+        print("Monitoring inactive")
+    
+    input("Press Enter to continue...")
 
-def create_alarm():
-    print("\n=== Skapa larm ===")
-    print("1. CPU (1–100)")
-    print("2. Disk (1–100)")
-    print("3. Memory (1–100)")
-    choice = input("Välj: ").strip()
-
-    if choice == "1": metric = "cpu"
-    elif choice == "2": metric = "disk"
-    elif choice == "3": metric = "memory"
-    else: print("Fel val."); return
-
-    t = input(f"Ställ in nivå för {metric.upper()} (1–100): ").strip()
-    if not t.isdigit() or not (1 <= int(t) <= 100):
-        print("Felaktig nivå."); return
-
-    t = float(t)
-    a = alarms.create(metric, t, ">=")
-    print(f"Larm för {metric.upper()} satt till {t:.0f}%. (ID {a['id']})")
-    utils.press()
-
-def show_alarms():
-    L = sorted(alarms.list_all(), key=lambda a: a["metric"])
-    if not L:
-        print("\nInga larm."); utils.press(); return
-    print("\n— Larm —")
-    for i,a in enumerate(L,1):
-        print(f"{i}. {a['metric'].upper()} larm {a['threshold']:.0f}% (ID {a['id']})")
-    utils.press()
-
-def edit_alarm():
-    L = alarms.list_all()
-    if not L:
-        print("Inga larm."); utils.press(); return
-    print("\n— Välj larm att ändra/ta bort —")
-    for i,a in enumerate(L,1):
-        print(f"{i}. {a['metric'].upper()} larm {a['threshold']:.0f}% (ID {a['id']})")
-    s = input("Nummer: ").strip()
-    if not s.isdigit() or not (1 <= int(s) <= len(L)):
-        print("Fel val."); return
-    a = L[int(s)-1]
-    f = input("t = ändra threshold, d = ta bort: ").strip().lower()
-    if f == "t":
-        n = input("Ny nivå (1–100): ").strip()
-        if n.isdigit() and 1 <= int(n) <= 100:
-            alarms.update(a["id"], threshold=float(n))
-            print("Uppdaterat.")
-        else:
-            print("Felaktig nivå.")
-    elif f == "d":
-        alarms.delete(a["id"])
-        print("Borttaget.")
+def show_last_session():
+    filename = utils.get_last_session_file()
+    
+    if filename:
+        # Load session data
+        with open(filename, "r") as f:
+            data = json.load(f)
+        
+        # Show summary
+        total_count = len(data)
+        print("Total measurements: " + str(total_count) + " | Last 5 entries:")
+        
+        # Show last 5 entries
+        last_entries = data[-5:]
+        for entry in last_entries:
+            line = entry["time"] + " - CPU: " + str(entry["cpu"]) + "% RAM: " + str(entry["ram"]) + "% DISK: " + str(entry["disk"]) + "%"
+            print(line)
     else:
-        print("Fel val.")
-    utils.press()
+        print("No previous session found")
+    
+    input("Press Enter to continue...")
 
-def show_last_results():
-    if not session_log:
-        print("\nIngen övervakning har körts än.")
-        utils.press(); return
-    print("\n=== Senaste övervakning ===")
-    print(f"Totalt antal mätpunkter: {len(session_log)}")
-    alarms_total = sum(len(x["alarms"]) for x in session_log)
-    print(f"Totalt antal larm: {alarms_total}")
-    print("\nSista mätpunkterna:")
-    for row in session_log[-5:]:
-        print(f"CPU {row['cpu']:.0f}%, Minne {row['mem']:.0f}%, Disk {row['disk']:.0f}%")
-        for alarm in row["alarms"]:
-            print(f"   -> {alarm}")
-    utils.press()
+def simple_monitoring():
+    print("Simple monitoring mode - showing 5 readings")
+    
+    # Show 5 simple readings
+    for i in range(5):
+        reading_number = i + 1
+        print("Reading " + str(reading_number) + "/5:")
+        
+        cpu = monitor.get_cpu()
+        ram = monitor.get_ram()
+        disk = monitor.get_disk()
+        
+        utils.pretty_print_status(cpu, ram, disk)
+        
+        if reading_number < 5:
+            print("Waiting 2 seconds...")
+            time.sleep(2)
+    
+    print("Simple monitoring completed!")
+    input("Press Enter to continue...")
 
-def overvakningslage():
-    print("\nÖvervakningsläge startat. Tryck Enter för att återgå till menyn.\n")
-    logger.log_event("Övervakningsläge startat")
-    stop_flag = {"stop": False}
-    def wait_for_enter():
-        input()
-        stop_flag["stop"] = True
-    threading.Thread(target=wait_for_enter, daemon=True).start()
-    while not stop_flag["stop"]:
-        cpu = monitor.read_cpu()
-        mem_pct,_,_ = monitor.read_memory()
-        disk_pct,_,_ = monitor.read_disk()
-        sys.stdout.write(
-            f"\rCPU {cpu:.0f}% | Minne {mem_pct:.0f}% | Disk {disk_pct:.0f}%   "
-        )
-        sys.stdout.flush()
-        time.sleep(1)
-    logger.log_event("Övervakningsläge avslutat")
+def show_menu():
+    print("\n=== SYSTEM MONITOR ===")
+    print("1. Start monitoring")
+    print("2. Show status")
+    print("3. Create alarm")
+    print("4. Show alarms")
+    print("5. Edit alarms")
+    print("6. Show last session")
+    print("7. Simple mode")
+    print("8. Exit")
 
 def main():
-    actions = [
-        ("Starta övervakning", start_overvakning),
-        ("Lista aktiv övervakning", list_active),
-        ("Skapa larm", create_alarm),
-        ("Visa larm", show_alarms),
-        ("Ändra/Ta bort larm", edit_alarm),
-        ("Visa senaste övervakningsresultat", show_last_results),
-        ("Övervakningsläge", overvakningslage),
-        ("Avsluta", None),
-    ]
-    while True:
-        print("\n=== Huvudmeny ===")
-        for i,(lbl,_) in enumerate(actions,1):
-            print(f"{i}. {lbl}")
-        s = input("Välj: ").strip()
-        if not s.isdigit() or not (1 <= int(s) <= len(actions)):
-            print("Fel val."); continue
-        _, fn = actions[int(s)-1]
-        if fn is None:
-            print("Avslutar..."); break
-        fn()
+    logger.write_log("Program started")
+    
+    try:
+        # Main menu loop
+        while True:
+            show_menu()
+            choice = input("Enter choice: ")
+            
+            # Handle menu choices
+            if choice == "1":
+                start_monitoring()
+            elif choice == "2":
+                show_status()
+            elif choice == "3":
+                alarms.create_new_alarm()
+            elif choice == "4":
+                alarms.show_all_alarms()
+            elif choice == "5":
+                alarms.edit_delete_alarms()
+            elif choice == "6":
+                show_last_session()
+            elif choice == "7":
+                simple_monitoring()
+            elif choice == "8":
+                print("Have a nice day, and remember that a hug each day keeps the worries away! 🤗")
+                logger.write_log("Program ended")
+                break
+            else:
+                print("You suck! Please try again and choose between 1-8.")
+                
+    except KeyboardInterrupt:
+        print("\nProgram interrupted by user")
+        logger.write_log("Program interrupted by Ctrl+C")
+    except Exception as error:
+        print("An error occurred:", str(error))
+        logger.write_log("Program error: " + str(error))
 
-if __name__=="__main__":
+if __name__ == "__main__":
     main()

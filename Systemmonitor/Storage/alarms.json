@@ -1,14 +1,1 @@
-[
-  {
-    "id": "f5385d4c-10ed-4442-baa2-ba56c4e49ba5",
-    "metric": "cpu",
-    "threshold": 95.0,
-    "direction": ">="
-  },
-  {
-    "id": "d7a66498-b4b7-4693-a055-e7301ab0f0c2",
-    "metric": "disk",
-    "threshold": 75.0,
-    "direction": ">="
-  }
-]
+[{"type": "RAM", "threshold": 80}, {"type": "CPU", "threshold": 80}]
